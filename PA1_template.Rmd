@@ -152,6 +152,30 @@ This closely matches the mean and median values for the data without imputed val
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
+Add a weekday column to the act dataset
+
+```{r}
+weekday<-0   #Force creation of a weekday variable 
+for(i in  1:nrow(act)) {
+        weekday[i] <- weekdays(as.Date(act[i,3],'%Y-%m-%d'))
+        
+}
+
+act<- cbind(act,weekday)
+
+act$wday <- as.factor(ifelse(act$weekday == "Saturday" | act$weekday == "Sunday","weekend", "weekday"))
+```
+
+Plot weekday and weekend activity
+
+```{r}
+library(lattice)
+xyplot(steps~interval | factor(wday), data=act, pch=19, main="Weekday/Weekend Activity", xlab="Interval",  ylab="Number of Steps",layout=c(1,2),type="l")
+```  
+
+We can see that there is a difference in activity patterns between weekdays and weekends.
+
+
 
 
 
