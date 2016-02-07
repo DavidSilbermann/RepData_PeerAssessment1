@@ -8,13 +8,63 @@ output:
 
 ## Loading and preprocessing the data
 
+If activity.csv doesn't exist unzip it from the ZIP file.  
 
+```{r}
+if (!file.exists("activity.csv")) {
+        unzip("activity.zip")
+}
+ 
+activity <- read.csv("activity.csv")
+```
 
 ## What is mean total number of steps taken per day?
 
+Use the aggregate function to find the total number of steps taken per day.  
+
+```{r}
+steps <- aggregate(activity$steps, by=list(Date=activity$date), FUN=sum)
+```
+
+The instructions said to produce a "histogram", but it sounded like what they really want is a barplot.  So I provided both.  
+
+Histogram:
+```{r}
+hist(steps$x)
+```
+
+Bar Plot:
+```{r}
+barplot(steps$x, main = "Steps per Day", xlab = "Date", ylab = "Steps")
+```
+
+The mean and median steps per day are:  
+
+```{r}
+mean(steps$x, na.rm = TRUE)
+median(steps$x, na.rm = TRUE)
+```
 
 
 ## What is the average daily activity pattern?
+
+Plot of the average steps per interval:
+
+```{r}
+stepsbyinterval <- aggregate(activity$steps, by=list(interval=activity$interval), FUN=mean, na.rm = TRUE)
+
+intervals <- strptime(sprintf("%04d",as.numeric(stepsbyinterval$interval)), format = "%H%M")
+
+plot(intervals, stepsbyinterval$x, type = "l", xlab="Interval (hh:mm)", ylab="Steps per Interval")
+```  
+
+The interval with the maximum number of steps per day, on average is:
+
+```{r}
+stepsbyinterval[max(stepsbyinterval$x),]
+
+```
+# This is clearly wrong!  I need to figure out where my error is.
 
 
 
