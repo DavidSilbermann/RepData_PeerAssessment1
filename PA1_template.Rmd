@@ -132,6 +132,24 @@ act<- cbind(act,a)
 head(act, n = 20L)
 ```
 
+
+```{r}
+stepsImputed <- aggregate(act$a, by=list(Date=act$date), FUN=sum)
+barplot(steps$x, main = "Steps per Day w/o Imputed Data", xlab = "Date", ylab = "Steps")
+barplot(stepsImputed$x, main = "Steps per Day with Imputed Data", xlab = "Date", ylab = "Steps")
+
+```
+
+The mean and median steps per day with imputed data are:  
+
+```{r}
+mean(stepsImputed$x, na.rm = TRUE)
+median(stepsImputed$x, na.rm = TRUE)
+```
+
+This closely matches the mean and median values for the data without imputed values.  I suspect that this is due to the way that I imputed values, by using the mean for the interval.
+
+
 ## Are there differences in activity patterns between weekdays and weekends?
 
 
