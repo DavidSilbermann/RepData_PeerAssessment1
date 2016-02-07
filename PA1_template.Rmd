@@ -7,6 +7,11 @@ output:
 
 
 ## Loading and preprocessing the data
+Lets load some libraries that we'll later.
+
+```{r}
+library(dplyr)
+```
 
 If activity.csv doesn't exist unzip it from the ZIP file.  
 
@@ -61,15 +66,74 @@ plot(intervals, stepsbyinterval$x, type = "l", xlab="Interval (hh:mm)", ylab="St
 The interval with the maximum number of steps per day, on average is:
 
 ```{r}
-stepsbyinterval[max(stepsbyinterval$x),]
+
+stepsbyinterval[ stepsbyinterval$x == max(stepsbyinterval$x), ]
 
 ```
-# This is clearly wrong!  I need to figure out where my error is.
-
 
 
 ## Imputing missing values
 
+To impute missing data I plan to use the average for a given interval.  
 
+First compute the mean steps for each interval:
+
+```{r}
+aveSteps <- aggregate(activity$steps, by=list(Date=activity$interval), FUN=mean, na.rm=TRUE)
+```
+
+Give the column meaningful names.
+
+```{r}
+names(aveSteps) <- c("interval", "mean.steps")
+```
+
+Lets create a copy of the activity dataframe and add to it a column that contains the 
+average number of steps for that interval.
+
+```{r}
+act <- merge(activity, aveSteps, by = "interval")
+head(act)
+```
+
+Create a new dataset using steps where it's available and mean.steps where steps is NA.
+
+I've created a small function to help me select where the steps value is NA.
+
+```{r}
+stepfunc <- function(a,b){
+        
+        if( is.na(a) ) {
+                b
+        } else {
+                a
+        }
+        
+} 
+```
+
+Force creation of a vector "a".
+```{r}
+a<-0
+```
+
+Now populate "a" with either the number of steps or, if teh number of steps is NA, the mean number of steps for that interval.
+```{r}
+for(i in  1:nrow(act)) {
+        a[i]<-stepfunc(act[i,2], act[i,4])
+        
+}
+head(a, n = 20L)
+```
+
+Add the new column to the "act" dataset.
+```{r}
+act<- cbind(act,a)
+head(act, n = 20L)
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+
+
+
